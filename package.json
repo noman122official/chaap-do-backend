@@ -1,0 +1,15 @@
+{
+  "name": "chaap-do-backend",
+  "version": "1.0.0",
+  "description": "This is the poc backend for chaapdo",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Naman",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "mongoose": "^8.1.3"
+  }
+}
