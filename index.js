@@ -1,28 +1,35 @@
-
-const express = require('express');
+const express = require("express");
+const { json } = require("body-parser");
+const cors = require('cors');
+const app = express();
+const registerRoute = require("./Routes/register");
+const loginRoute = require("./Routes/login");
 const mongoose = require('mongoose');
 
-const app = express();
-const PORT = process.env.PORT || 3000;
+
+app.use(cors({
+    origin: '*'
+}));
+app.use(json());
+app.options('*', cors()) 
+const port = process.env.PORT || 3000;
 
 
-mongoose.connect('mongodb://localhost:27017/mydatabase', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
+app.use('/', registerRoute);
+app.use('/', loginRoute);
+app.listen(port, (error)=>{
+    if(error){
+        console.log(`Error connecting to the port ${port}`);
+    }
+    else{
+        const dbConnectionURL = `mongodb://localhost:27017/chaap-do`
+        mongoose.connect(dbConnectionURL).then(function(){
+            console.log("connected to mongo db server");
+            console.log(`Connected to port ${port}`);
+        }).catch(function(error){
+            console.log("error connecting mongodb server",error);
+        })
+    }
+
 })
-.then(() => {
-  console.log('Connected to MongoDB');
-})
-.catch((error) => {
-  console.error('Error connecting to MongoDB:', error.message);
-});
 
-// Define routes
-app.get('/', (req, res) => {
-  res.send('Hello World!');
-});
-
-// Start the server
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
