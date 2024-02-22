@@ -1,24 +1,29 @@
-const jwt = require( 'jsonwebtoken');
+const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const User = require('../../Models/Users/User');
 const UserLoginDetails = require('../../Models/Users/UserLoginDetails');
-const UserAccessDetails = require('../../Models/Users/UserAccess');
 
 const LoginController = {
     login: async (req, res) => {
         try {
-            const { email, password } = req.body;
+            const { userId, password } = req.body;
 
-            const user = await User.findOne({ email });
-            const userId = user.userId;
-            const userPassword = await UserLoginDetails.findOne({userId});
+            const user = await User.findOne({ userId });
+
             if (!user) {
                 return res.status(404).json({ message: "User not found" });
             }
-            const isMatch = await compare(password, userPassword.password);
+
+            const userLoginDetails = await UserLoginDetails.findOne({ userId });
+            if (!userLoginDetails) {
+                return res.status(401).json({ message: "Invalid credentials" });
+            }
+
+            const isMatch = await bcrypt.compare(password, userLoginDetails.password);
             if (!isMatch) {
                 return res.status(401).json({ message: "Invalid credentials" });
             }
+
             const payload = {
                 user: {
                     id: user.id,
